@@ -1,0 +1,37 @@
+1. first-class func是指函数是第一类成员，能够出现在程序中的任何地方。高阶函数指的是参数是函数的函数。
+2. 函数闭包是指函数的代码以及所处的环境
+3. fun test a b =
+	a + b - 1
+	int -> int -> int
+4. 	[2, 3, 4]
+	[3, 4, 5]
+	[3, 4, 5, 6]
+5.
+6.	val x = 1 : int
+	val f = <hidden-value> : int -> int
+	val z = 7 : int
+	val f = fn : 'a -> 'a
+	val ans = 7 : int
+
+	val x = <hidden-value> : int
+	val y = <hidden-value> : int
+	val f = fn : (int -> int) * (int -> int) -> int
+	val x = 3 : int
+	val y = 4 : int
+	val ans = 5 : int
+
+	val x = <hidden-value> : int
+	val f = fn : int -> int	
+	val x = 2 : int
+	val ans = 9 : int
+
+	
+
+7.	fun foldl f acc xs =
+   case xs of 
+     []    => acc
+   | x::xs => fold f (f(x, acc)) xs
+   	fun foldr f acc xs =
+	case xs of
+		[] => acc
+		| x::xs => f(x, (foldr f acc xs))

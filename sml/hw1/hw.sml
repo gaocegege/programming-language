@@ -2,27 +2,22 @@ fun is_older((y1, m1, d1), (y2, m2, d2)) =
 	y1 < y2 orelse (y1 = y2 andalso m1 < m2) 
 	orelse (y1 = y2 andalso m1 = m2 andalso d1 < d2);
 
-(* can be implemented by reduce~? *)
-fun number_in_month((date::nil):(int * int * int) list, month:int) = 
-	if #2 date = month then 1 else 0
-|	number_in_month((date::dates):(int * int * int) list, month:int) = 
-	(if #2 date = month then 1 else 0) + number_in_month(dates, month);
+fun number_in_month(days: (int*int*int) list, month: int) =
+	if null days then 0
+	else number_in_month(tl days, month)
+		+ (if #2 (hd days) = month then 1 else 0);
 
-fun number_in_months(dates:(int * int * int) list, (month::nil):int list) =
-	number_in_month(dates, month)
-|	number_in_months(dates:(int * int * int) list, (month::months):int list) =
-	number_in_month(dates, month) + number_in_months(dates, months);
+fun number_in_months(days: (int*int*int) list, months: int list) =
+	if null months then 0
+	else number_in_month(days, hd months)+number_in_months(days, tl months);
 
-fun dates_in_month((date::nil):(int * int * int) list, month:int) = 
-	if #2 date = month then (date::nil) else nil
-|	dates_in_month((date::dates):(int * int * int) list, month:int) = 
-	if #2 date = month then (date::dates_in_month(dates, month)) else dates_in_month(dates, month);
+fun dates_in_month(days:(int*int*int) list, month: int) =
+	if null days then []
+	else (if #2 (hd days) = month then hd days :: dates_in_month(tl days, month) else dates_in_month(tl days, month));
 
-fun dates_in_months(dates:(int * int * int) list, (month::nil):int list) =
-	dates_in_month(dates, month)
-|	dates_in_months(dates:(int * int * int) list, (month::months):int list) =
-	dates_in_month(dates, month)@dates_in_months(dates, months);
-
+fun dates_in_months(days: (int*int*int) list, months: int list) =
+	if null months then []
+	else dates_in_month(days, hd months) @ dates_in_months(days, tl months);
 fun get_nth(str::nil: string list, n: int) = 
 	if n > 1 then ""
 	else str
@@ -39,30 +34,24 @@ fun number_before_reaching_sum (sum:int, (ele::lst):int list) =
 	if sum > ele then 1 + number_before_reaching_sum(sum - ele, lst)
 	else 0;
 
-fun what_month days:int =
-	let val days_in_months = [31,28,31,30,31,30,31,31,30,31,30,31]
-	in number_before_reaching_sum(days - 1, days_in_months)
-	end;
+fun what_month(n: int) =
+	number_before_reaching_sum(n, [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31])+1;
 
-fun month_range (day1:int, day2:int) =
+fun month_range(day1: int, day2: int) =
 	if day1 > day2 then []
-	else what_month(day1)::month_range(day1 + 1, day2);
+	else what_month(day1) :: month_range(day1+1, day2);
 
 (* not sure: name conflict~? *)
-fun oldest (date::dates:(int * int * int) list) =
-	if null (date::dates) then NONE
+fun oldest(days: (int*int*int) list) =
+	if null days then NONE
 	else 
 		let
-			fun oldest_helper(date::nil:(int * int * int) list, oldestDate:int * int * int) =
-				if is_older(date, oldestDate) then oldestDate
-				else date
-			|	oldest_helper(date::dates:(int * int * int) list, oldestDate:int * int * int) =
-				(* can merge something *)
-				if is_older(date, oldestDate) then oldest_helper (dates, oldestDate)
-				else oldest_helper (dates, date);
+			val tl_ans = oldest(tl days)
 		in
-			SOME (oldest_helper (dates, date))
-		end;
+			if isSome tl_ans andalso is_older(valOf tl_ans, hd days)
+			then tl_ans			
+			else SOME (hd days)
+		end
 
 fun number_in_months_challenge(dates: (int*int*int) list, months: int list) =
 	let 
